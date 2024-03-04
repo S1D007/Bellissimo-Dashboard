@@ -305,15 +305,44 @@ export const useAdmin = create<AdminState>((set: any) => ({
     },
 
     // manage orders api
-    fetchAllOrders: async () => {
+      // manage orders api
+      fetchAllOrders: async () => {
         try {
-            set({ isOrderLoading: true })
-
+            set({ isLoading: true })
+            let res = await axios.get(`${API_URL}/order/all`)
+            if (res.data.status == "OK") {
+                set({
+                    allOrders: res.data.data
+                })
+            }
         } catch (error) {
             toast.error("server issue")
         }
         finally {
-            set({ isOrderLoading: false })
+            set({ isLoading: false })
+        }
+    },
+    updateOrders: async (data: any, _id: any) => {
+        try {
+            set({ isLoading: true })
+            let res = await axios.patch(`${API_URL}/products/update/${_id}`, data)
+            if (res.data.status == "OK") {
+                let prevarr: any = useAdmin?.getState()?.allProducts;
+                prevarr.forEach((e: any) => {
+                    if (e._id == _id) {
+                        e = { ...e, ...data };
+                    }
+                });
+                set({
+                    allProducts: prevarr
+                })
+                toast.success("updated successfully")
+            }
+        } catch (error) {
+            toast.error("server issue")
+        }
+        finally {
+            set({ isLoading: false })
         }
     },
 
