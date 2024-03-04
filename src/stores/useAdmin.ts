@@ -5,8 +5,8 @@ import { API_URL } from "@/constants/API_URL"
 import { uploadMultipleFiles, uploadSingleFile } from "@/utils/upload"
 type AdminState = {
     isLoading: boolean,
-    crousalImage:any[],
-    allOffers:any[],
+    crousalImage: any[],
+    allOffers: any[],
     allProducts: any[],
     allOrders: any[],
     allUsers: any[],
@@ -15,8 +15,8 @@ type AdminState = {
     test: any[],
     uploadedUrl: string,
 
-    AddOffers: (data:any) => void,
-    UpdateOffers: (data:any) => void,
+    AddOffers: (data: any) => void,
+    UpdateOffers: (data: any) => void,
     fetchAllUsers: () => void,
     fetchAllProducts: () => void,
     addProducts: (data: any) => void,
@@ -36,8 +36,8 @@ type AdminState = {
 
 export const useAdmin = create<AdminState>((set: any) => ({
     isLoading: false,
-    crousalImage : [],
-    allOffers : [],
+    crousalImage: [],
+    allOffers: [],
     allProducts: [],
     allOrders: [],
     allUsers: [],
@@ -52,7 +52,7 @@ export const useAdmin = create<AdminState>((set: any) => ({
             set({ isLoading: true })
             let res = await axios.get(`${API_URL}/home/offers`)
             if (res.data.status == "OK") {
-                console.log("fetch offers " , res.data)
+                console.log("fetch offers ", res.data)
                 set({
                     allOffers: res.data.data
                 })
@@ -64,17 +64,17 @@ export const useAdmin = create<AdminState>((set: any) => ({
             set({ isLoading: false })
         }
     },
-    DeleteOffers: async (_id:string) => {
+    DeleteOffers: async (_id: string) => {
         try {
             console.log("dele ")
             set({ isLoading: true })
             let res = await axios.delete(`${API_URL}/home/offers/${_id}`)
-                let prev = useAdmin.getState().allOffers;
-                let newData = prev.filter((e:any)=>e = e._id !== _id)
-                set({
-                    allOffers: newData
-                })
-                toast.success("offer deleted succsfully")
+            let prev = useAdmin.getState().allOffers;
+            let newData = prev.filter((e: any) => e = e._id !== _id)
+            set({
+                allOffers: newData
+            })
+            toast.success("offer deleted succsfully")
         } catch (error) {
             toast.error("server issue")
         }
@@ -82,50 +82,53 @@ export const useAdmin = create<AdminState>((set: any) => ({
             set({ isLoading: false })
         }
     },
-    AddOffers: async (data:any) => {
+    AddOffers: async (data: any) => {
         try {
             set({ isLoading: true })
             if (data.image) {
                 const image = await uploadSingleFile(data.image)
                 data = { ...data, image }
             }
-            let res = await axios.post(`${API_URL}/home/offers` , data)
+            let res = await axios.post(`${API_URL}/home/offers`, data)
             if (res.data.status == "OK") {
-                console.log("res",res.data)
+                console.log("res", res.data)
                 let prev = useAdmin.getState().allOffers;
                 set({
-                    allOffers: [...prev , res.data.data]
+                    allOffers: [...prev, res.data.data]
                 })
                 toast.success("offer added succesfully")
             }
         } catch (error) {
-            console.log("error " ,error)
+            console.log("error ", error)
             toast.error("server issue")
         }
         finally {
             set({ isLoading: false })
         }
     },
-    UpdateOffers: async (data:any) => {
+    UpdateOffers: async (data: any) => {
         try {
             set({ isLoading: true })
-            console.log("Data ",data)
+            const prevData = useAdmin.getState().allOffers;
+            const currentData = prevData.find((e: any) => e._id == data._id)
             if (data?.image) {
                 const image = await uploadSingleFile(data.image)
                 data = { ...data, image }
+            } else {
+                data = { ...data, image: currentData.image }
             }
-            let res = await axios.put(`${API_URL}/home/offers/${data?._id}` , data)
+            let res = await axios.put(`${API_URL}/home/offers/${data?._id}`, data)
             if (res.data.status == "OK") {
-                console.log("res",res.data)
+                console.log("res", res.data)
                 let prev = useAdmin.getState().allOffers;
-                let filterdData = prev.filter((e)=>e = e._id != data._id)
+                let filterdData = prev.filter((e) => e = e._id != data._id)
                 set({
-                    allOffers: [...filterdData , data]
+                    allOffers: [...filterdData, data]
                 })
                 toast.success("offer added succesfully")
             }
         } catch (error) {
-            console.log("error " ,error)
+            console.log("error ", error)
             toast.error("server issue")
         }
         finally {
@@ -150,16 +153,16 @@ export const useAdmin = create<AdminState>((set: any) => ({
             set({ isLoading: false })
         }
     },
-    Deletecarousel: async (_id:string) => {
+    Deletecarousel: async (_id: string) => {
         try {
             set({ isLoading: true })
             let res = await axios.delete(`${API_URL}/home/carousel/${_id}`)
-                let prev = useAdmin.getState().crousalImage;
-                let newData = prev.filter((e)=>e = e._id !== _id)
-                set({
-                    crousalImage: newData
-                })
-                toast.success("image deleted succsfully")
+            let prev = useAdmin.getState().crousalImage;
+            let newData = prev.filter((e) => e = e._id !== _id)
+            set({
+                crousalImage: newData
+            })
+            toast.success("image deleted succsfully")
         } catch (error) {
             toast.error("server issue")
         }
@@ -167,18 +170,18 @@ export const useAdmin = create<AdminState>((set: any) => ({
             set({ isLoading: false })
         }
     },
-    Addcarousel: async (data:any) => {
+    Addcarousel: async (data: any) => {
         try {
             if (data.image) {
                 const image = await uploadSingleFile(data.image)
                 data = { ...data, image }
             }
             set({ isLoading: true })
-            let res = await axios.post(`${API_URL}/home/carousel` ,data)
+            let res = await axios.post(`${API_URL}/home/carousel`, data)
             if (res.data.status == "OK") {
                 let prev = useAdmin.getState().crousalImage;
                 set({
-                    crousalImage: [...prev , res.data.data]
+                    crousalImage: [...prev, res.data.data]
                 })
                 toast.success("image upload succesfully")
             }
@@ -365,6 +368,8 @@ export const useAdmin = create<AdminState>((set: any) => ({
             if (data.icon) {
                 const icon = await uploadSingleFile(data.icon)
                 data = { ...data, icon }
+            } else {
+                data = { ...data, icon: useAdmin.getState().allCategory.find((e: any) => e._id == _id).icon }
             }
             let res = await axios.patch(`${API_URL}/category/update/${_id}`, data)
             if (res.data.status == "OK") {
@@ -374,9 +379,7 @@ export const useAdmin = create<AdminState>((set: any) => ({
                         e.name = data.name;
                     }
                 });
-                set({
-                    allCategory: prevarr
-                })
+                await useAdmin.getState().fetchAllCategory()
                 toast.success("updated successfully")
             }
         } catch (error) {

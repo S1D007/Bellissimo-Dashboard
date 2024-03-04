@@ -48,8 +48,6 @@ export default function Users() {
             <TableHead>Lastname</TableHead>
             <TableHead>Phone Number</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead>Orders</TableHead>
-            <TableHead>Cart</TableHead>
             <TableHead>Created At</TableHead>
             <TableHead className="text-right">Action</TableHead>
           </TableRow>
@@ -67,8 +65,6 @@ export default function Users() {
                   <TableCell>{e.name.lastName}</TableCell>
                   <TableCell>{e.phoneNumber}</TableCell>
                   <TableCell>{e.email}</TableCell>
-                  <TableCell>{e.orders?.length} items</TableCell>
-                  <TableCell>{e.cart?.length} items</TableCell>
                   <TableCell>{new Date(e.createdAt).toDateString()}</TableCell>
                   <TableCell className="text-right">
                     <div className="ml-auto flex items-center w-fit justify-center gap-3">

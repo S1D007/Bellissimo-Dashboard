@@ -68,6 +68,7 @@ export default function Categories() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">S.No</TableHead>
+            <TableHead>Icon</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Created At</TableHead>
             <TableHead className="text-right">Action</TableHead>
@@ -81,6 +82,12 @@ export default function Categories() {
               {categoriesList.map((e: any, i: any) => (
                 <TableRow key={e._id}>
                   <TableCell className="font-medium">{i + 1}</TableCell>
+                  <TableCell><img src={e.icon} style={{
+                    width: "50px",
+                    height: "50px",
+                    objectFit: "contain",
+                    borderRadius: "50%",
+                  }} /></TableCell>
                   {/* <TableCell className="font-medium select-text">{e._id}</TableCell> */}
                   <TableCell>{e.name}</TableCell>
                   <TableCell>{new Date(e.createdAt).toDateString()}</TableCell>
@@ -117,7 +124,8 @@ export default function Categories() {
                               <Button
                                 variant="destructive"
                                 onClick={() => {
-                                  deleteCategory(e._id);
+                                  alert("You cant delete category now! Please contact Siddhant");
+                                  // deleteCategory(e._id);
                                 }}
                               >
                                 Yes , delete
@@ -133,7 +141,7 @@ export default function Categories() {
             </>
           )}
         </TableBody>
-        <TableFooter>
+        <TableFooter className="fixed bottom-0 right-0" >
           <TableRow>
             <TableCell colSpan={3}>total</TableCell>
             <TableCell className="text-right">{allCategory.length}</TableCell>

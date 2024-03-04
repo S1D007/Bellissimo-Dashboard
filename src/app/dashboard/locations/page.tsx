@@ -128,7 +128,7 @@ export default function Location() {
             </>
           }
         </TableBody>
-        <TableFooter>
+        <TableFooter className="fixed bottom-0 right-0">
           <TableRow>
             <TableCell colSpan={6}>total</TableCell>
             <TableCell className='text-right'>{allLocations.length}</TableCell>

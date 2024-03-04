@@ -30,7 +30,7 @@ const [image, setimage] = React.useState('')
   );
 
   return (
-    <main className="p-2 flex items-center justify-center flex-wrap">
+    <main className="p-2 flex flex-col items-center justify-center flex-wrap">
      <header className="flex flex-col items-center gap-5 justify-between my-5">
         <div>
           <h1 className="d_heading">All crausal images</h1>
@@ -59,7 +59,7 @@ const [image, setimage] = React.useState('')
               Addcarousel({ image });
             }}
           >
-            Add New Offer
+            Add New Crousal Image
           </Button>
         </SheetClose>
           </SheetContent>
@@ -77,7 +77,7 @@ const [image, setimage] = React.useState('')
               <img className="rounded" src={e?.image}/>
               <Button variant={"destructive"} onClick={()=>{
                 Deletecarousel(e._id)
-              }} className="m-2">delete</Button>
+              }} className="m-2">Delete</Button>
               </CarouselItem>
           ))}
         </CarouselContent>

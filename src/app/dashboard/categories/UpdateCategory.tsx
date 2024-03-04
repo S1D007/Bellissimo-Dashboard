@@ -61,7 +61,7 @@ export default function UpdateCategory({ value = "", _id = "" }) {
           <Button
             type="submit"
             onClick={() => updateCategory({
-                category,
+                name: category,
                 icon,
             }, _id)}
           >
