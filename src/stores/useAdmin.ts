@@ -305,7 +305,6 @@ export const useAdmin = create<AdminState>((set: any) => ({
     },
 
     // manage orders api
-      // manage orders api
       fetchAllOrders: async () => {
         try {
             set({ isLoading: true })
@@ -325,16 +324,10 @@ export const useAdmin = create<AdminState>((set: any) => ({
     updateOrders: async (data: any, _id: any) => {
         try {
             set({ isLoading: true })
-            let res = await axios.patch(`${API_URL}/products/update/${_id}`, data)
+            let res = await axios.patch(`${API_URL}/order/update/${_id}`, data)
             if (res.data.status == "OK") {
-                let prevarr: any = useAdmin?.getState()?.allProducts;
-                prevarr.forEach((e: any) => {
-                    if (e._id == _id) {
-                        e = { ...e, ...data };
-                    }
-                });
                 set({
-                    allProducts: prevarr
+                    // updat the state here
                 })
                 toast.success("updated successfully")
             }

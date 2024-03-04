@@ -25,6 +25,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import Link from 'next/link'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function Orders() {
   const { fetchAllOrders, allOrders }: any = useAdmin();
@@ -79,8 +82,9 @@ export default function Orders() {
                         <DialogTrigger asChild>
                           <TbEyeSearch />
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                        hii
+                        <DialogContent>
+                          {/* card is here */}
+                        <ViewDetailCard data={e}/>
                           <DialogFooter>
                             <DialogTrigger asChild>
                               <Button variant="outline">ok</Button>
@@ -106,3 +110,60 @@ export default function Orders() {
   )
 }
 
+
+
+const ViewDetailCard = ({data}:any)=>{
+  return(
+    <main>
+        <div className="grid gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="font-semibold">orderid : #{data?._id}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Placed on {new Date(data.createdAt).toDateString()}</div>
+            <div className="ml-auto flex items-center gap-2">
+              <Button size="sm" variant="outline">
+                Accept Order
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="w-[120px]" id="dispatch" size="sm" variant="outline">
+                    Update Dispatch
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>Dispatched</DropdownMenuItem>
+                  <DropdownMenuItem>In Transit</DropdownMenuItem>
+                  <DropdownMenuItem>Delivered</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+          <div className="grid gap-2 text-sm">
+            <div className="grid grid-cols-2 items-start">
+              <div className="font-medium">Products</div>
+              <div className="text-right">
+                <Link className="underline" href="#">
+                  View
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 items-start">
+              <div className="font-medium">User</div>
+              <div className="text-right">
+                <Link className="underline" href="#">
+                  View
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 items-start">
+              <div className="font-medium">Order Status</div>
+              <div className="text-right">Pending</div>
+            </div>
+            <div className="grid grid-cols-2 items-start">
+              <div className="font-medium">Dispatch Status</div>
+              <div className="text-right">Not Dispatched</div>
+            </div>
+          </div>
+        </div>
+    </main>
+  )
+}
