@@ -13,6 +13,7 @@ const Pgae = () => {
           </li>
           <li>Email Address</li>
           <li>Your Home Address</li>
+          <li>Phone Number</li>
         </ul>
         <br/>
         <p>
