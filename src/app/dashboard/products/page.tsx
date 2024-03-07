@@ -39,6 +39,7 @@ export default function Products() {
     fetchAllCategory,
     fetchAllLocation,
     deleteProducts,
+    removeUpdatdData,
   } = useAdmin();
   useEffect(() => {
     fetchAllProducts();
@@ -69,13 +70,14 @@ export default function Products() {
         <TableHeader>
           <TableRow className="capitalize text-center">
             <TableHead className="w-[2rem]">S.No</TableHead>
+            <TableHead>Image</TableHead>
             <TableHead>Name</TableHead>
             <TableHead className="text-center">Total price</TableHead>
             <TableHead>gstRate</TableHead>
             <TableHead>multiPack</TableHead>
             <TableHead>stock</TableHead>
-            <TableHead>reviews</TableHead>
-            <TableHead>variants</TableHead>
+            {/* <TableHead>reviews</TableHead> */}
+            {/* <TableHead>variants</TableHead> */}
             <TableHead>eanCode</TableHead>
             <TableHead>hsnCode</TableHead>
             <TableHead>size</TableHead>
@@ -93,6 +95,17 @@ export default function Products() {
                 <TableRow key={e._id}>
                   <TableCell className="font-medium">{i + 1}</TableCell>
                   {/* <TableCell className="font-medium select-text">{e._id}</TableCell> */}
+                  <TableCell>
+                    <img
+                      src={e.images[0]}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        objectFit: "contain",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  </TableCell>
                   <TableCell>{e.name}</TableCell>
                   <TableCell className="flex gap-2 items-center justify-center">
                     {e.discount?.percentage > 0 ? (
@@ -114,8 +127,8 @@ export default function Products() {
                   <TableCell>{e.gstRate}%</TableCell>
                   <TableCell>{e.multiPack == true ? "Yes" : "No"}</TableCell>
                   <TableCell>{e.stock}</TableCell>
-                  <TableCell>{e.reviews.length}</TableCell>
-                  <TableCell>{e.variants.length}</TableCell>
+                  {/* <TableCell>{e.reviews.length}</TableCell> */}
+                  {/* <TableCell>{e.variants.length}</TableCell> */}
                   <TableCell>{e.eanCode}</TableCell>
                   <TableCell>{e.hsnCode}</TableCell>
                   <TableCell>
@@ -131,7 +144,12 @@ export default function Products() {
                         <SheetTrigger asChild>
                           <MdModeEdit />
                         </SheetTrigger>
-                        <SheetContent side={"left"}>
+                        <SheetContent
+                          onCloseAutoFocus={() => {
+                            removeUpdatdData();
+                          }}
+                          side={"left"}
+                        >
                           <UpdateProduct
                             _id={e._id}
                             name={e?.name}

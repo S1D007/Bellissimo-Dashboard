@@ -28,8 +28,16 @@ export default function NewProduct({
   price = 0,
   stock = 0,
   images = [],
-  category = "",
-  deliveryLocations = [""],
+  category = {
+    _id: "",
+    name: "",
+  },
+  deliveryLocations = [
+    {
+      _id: "",
+      name: "",
+    },
+  ],
   eanCode = "",
   hsnCode = "",
   multiPack = false,
@@ -45,37 +53,15 @@ export default function NewProduct({
   },
   _id = "",
 }) {
-  const { updateProducts, allCategory, allLocations } = useAdmin();
-  const [productData, setProductData] = useState({
-    name: "",
-    description: "",
-    price: 0,
-    stock: 0,
-    images: [],
-    category: "",
-    deliveryLocations: [""],
-    eanCode: "",
-    hsnCode: "",
-    multiPack: false,
-    howToUse: "",
-    gstRate: 0,
-    discount: {
-      percentage: 0,
-      newAmount: 0,
-    },
-    size: {
-      amount: 0,
-      unit: "",
-    },
-  });
+  const {
+    updateProducts,
+    allCategory,
+    allLocations,
+    productData,
+    setProductData,
+  } = useAdmin();
 
-  const handleChange = (property: any, value: any) => {
-    setProductData((prevProductData) => ({
-      ...prevProductData,
-      [property]: value,
-    }));
-  };
-
+  
   return (
     <main className="overflow-y-auto max-h-full">
       <SheetHeader>
@@ -92,7 +78,9 @@ export default function NewProduct({
           id="productName"
           placeholder="Enter product name"
           value={productData.name || name}
-          onChange={(e) => handleChange("name", e.target.value)}
+          onChange={(e) => {
+            setProductData({ ...productData, name: e.target.value });
+          }}
           className="col-span-3"
           autoComplete="off"
         />
@@ -103,7 +91,9 @@ export default function NewProduct({
           id="productDescription"
           placeholder="Enter product description"
           value={productData.description || description}
-          onChange={(e) => handleChange("description", e.target.value)}
+          onChange={(e) => {
+            setProductData({ ...productData, description: e.target.value });
+          }}
           className="col-span-3"
         />
         <div className="grid grid-cols-2 gap-3 w-full">
@@ -116,7 +106,9 @@ export default function NewProduct({
               id="productPrice"
               placeholder="Enter product price"
               value={productData.price || price}
-              onChange={(e) => handleChange("price", +e.target.value)}
+              onChange={(e) => {
+                setProductData({ ...productData, price: +e.target.value });
+              }}
               className="w-full"
               autoComplete="off"
             />
@@ -130,7 +122,9 @@ export default function NewProduct({
               id="productStock"
               placeholder="Enter product stock"
               value={productData.stock || stock}
-              onChange={(e) => handleChange("stock", +e.target.value)}
+              onChange={(e) => {
+                setProductData({ ...productData, stock: +e.target.value });
+              }}
               className="w-full"
               autoComplete="off"
             />
@@ -148,11 +142,17 @@ export default function NewProduct({
               type="string"
               id="productPrice"
               placeholder="Enter product price"
-              value={productData.size.amount || size.amount}
+              value={
+                (productData.size && productData.size.amount) || size.amount
+              }
               onChange={(e) =>
-                handleChange("size", {
-                  amount: +e.target.value,
-                  unit: productData.size.unit,
+                setProductData({
+                  ...productData,
+                  size: {
+                    amount: +e.target.value,
+                    unit:
+                      (productData.size && productData.size.unit) || size.unit,
+                  },
                 })
               }
               className="w-full"
@@ -164,18 +164,29 @@ export default function NewProduct({
               Unit
             </Label>
             <Select
-              defaultValue={productData.size.unit || size.unit}
+              defaultValue={
+                (productData.size && productData.size.unit) || size.unit
+              }
               onValueChange={(value) => {
-                handleChange("size", {
-                  amount: productData.size.amount,
-                  unit: value,
+                setProductData({
+                  ...productData,
+                  size: {
+                    amount:
+                      (productData.size && productData.size.amount) ||
+                      size.amount,
+                    unit: value,
+                  },
                 });
               }}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a unit" />
               </SelectTrigger>
-              <SelectContent defaultValue={productData.size.unit || size.unit}>
+              <SelectContent
+                defaultValue={
+                  (productData.size && productData.size.unit) || size.unit
+                }
+              >
                 <SelectGroup>
                   {["kg", "g", "l", "ml", "unit"].map((unit: any) => (
                     <SelectItem value={unit} key={unit}>
@@ -198,21 +209,72 @@ export default function NewProduct({
           type="string"
           id="productDiscount"
           placeholder="Enter product price"
-          value={productData.discount.percentage || discount.percentage}
+          value={
+            (productData.discount && productData.discount.percentage) ||
+            discount.percentage
+          }
           onChange={(e) =>
-            handleChange("discount", {
-              percentage: +e.target.value,
-              newAmount: price - price * (+e.target.value / 100),
+            setProductData({
+              ...productData,
+              discount: {
+                percentage: +e.target.value,
+                newAmount:
+                  productData.price &&
+                  productData.discount &&
+                  productData.discount.percentage
+                    ? Math.floor(
+                        productData.price -
+                          (productData.price * +e.target.value) / 100
+                      )
+                    : Math.floor(price - (price * +e.target.value) / 100),
+              },
             })
           }
           className="w-full"
           autoComplete="off"
         />
-        {discount.percentage > 0 && (
-          <h1 className="text-sm text-gray-200">
-            New Amount: ₹ {productData.discount.newAmount || discount.newAmount}
-          </h1>
-        )}
+        <h1>Or</h1>
+        <h1 className="text-sm text-gray-500">
+          Enter the new amount and the discount percentage will be calculated
+          automatically
+        </h1>
+        <Input
+          type="string"
+          id="productDiscount"
+          placeholder="Enter product price"
+          value={
+            (productData.discount && productData.discount.newAmount) ||
+            discount.newAmount
+          }
+          onChange={(e) =>
+            setProductData({
+              ...productData,
+              discount: {
+                percentage:
+                  productData.price &&
+                  productData.discount &&
+                  productData.discount.newAmount
+                    ? Math.floor(
+                        ((productData.price - +e.target.value) /
+                          productData.price) *
+                          100
+                      )
+                    : Math.floor(((price - +e.target.value) / price) * 100),
+                newAmount: +e.target.value,
+              },
+            })
+          }
+          className="w-full"
+          autoComplete="off"
+        />
+        {(productData.discount && productData.discount.percentage) ||
+          (discount.percentage && (
+            <h1 className="text-sm text-gray-200">
+              New Amount: ₹{" "}
+              {(productData.discount && productData.discount.newAmount) ||
+                discount.newAmount}
+            </h1>
+          ))}
         <Label htmlFor="productPrice" className="text-left">
           Product Images
         </Label>
@@ -224,7 +286,7 @@ export default function NewProduct({
           onChange={(e) => {
             const files = e.target.files;
             if (files) {
-              handleChange("images", files);
+              setProductData({ ...productData, images: files });
             } else {
               alert("No files selected");
             }
@@ -236,15 +298,24 @@ export default function NewProduct({
           Product categories
         </Label>
         <Select
-          defaultValue={productData.category || category}
+          defaultValue={
+            (productData.category && productData.category) || category._id
+          }
+          value={(productData.discount && productData.category) || category._id}
           onValueChange={(value) => {
-            handleChange("category", value);
+            setProductData({ ...productData, category: value });
           }}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
-          <SelectContent defaultValue={productData.category || category}>
+          <SelectContent
+            defaultValue={
+              (productData.category &&
+                allCategory.find((e) => e._id === productData.category))?._id ||
+              category.name
+            }
+          >
             <SelectGroup>
               {allCategory.map((category: any) => (
                 <SelectItem value={category._id} key={category._id}>
@@ -259,10 +330,15 @@ export default function NewProduct({
         </Label>
         <Select
           defaultValue={
-            productData.deliveryLocations[0] || deliveryLocations[0]
+            (productData.deliveryLocations &&
+              productData.deliveryLocations[0]) ||
+            deliveryLocations[0]._id
           }
           onValueChange={(value) => {
-            handleChange("deliveryLocations", [value]);
+            setProductData({
+              ...productData,
+              deliveryLocations: [value],
+            });
           }}
         >
           <SelectTrigger>
@@ -270,7 +346,9 @@ export default function NewProduct({
           </SelectTrigger>
           <SelectContent
             defaultValue={
-              productData.deliveryLocations[0] || deliveryLocations[0]
+              (productData.deliveryLocations &&
+                allLocations.find((e) => e._id === productData.deliveryLocations?.[0])) ||
+                category.name
             }
           >
             <SelectGroup>
@@ -293,7 +371,9 @@ export default function NewProduct({
           id="productEANCode"
           placeholder="Enter product EAN code"
           value={productData.eanCode || eanCode}
-          onChange={(e) => handleChange("eanCode", e.target.value)}
+          onChange={(e) => {
+            setProductData({ ...productData, eanCode: e.target.value });
+          }}
           className="col-span-3"
           autoComplete="off"
         />
@@ -305,7 +385,9 @@ export default function NewProduct({
           id="productHSNCode"
           placeholder="Enter product HSN code"
           value={productData.hsnCode || hsnCode}
-          onChange={(e) => handleChange("hsnCode", e.target.value)}
+          onChange={(e) => {
+            setProductData({ ...productData, hsnCode: e.target.value });
+          }}
           className="col-span-3"
           autoComplete="off"
         />
@@ -314,7 +396,9 @@ export default function NewProduct({
           <Checkbox
             id="productMultiPack"
             checked={productData.multiPack || multiPack}
-            onCheckedChange={(e: any) => handleChange("multiPack", e)}
+            onCheckedChange={(e: any) => {
+              setProductData({ ...productData, multiPack: e.target.checked });
+            }}
             className="col-span-3"
           />
           <Label htmlFor="productMultiPack" className="text-left">
@@ -329,7 +413,9 @@ export default function NewProduct({
           id="productHowToUse"
           placeholder="Enter instructions on how to use the product"
           value={productData.howToUse || howToUse}
-          onChange={(e) => handleChange("howToUse", e.target.value)}
+          onChange={(e) => {
+            setProductData({ ...productData, howToUse: e.target.value });
+          }}
           className="col-span-3"
         />
 
@@ -342,7 +428,9 @@ export default function NewProduct({
           placeholder="Enter product GST rate"
           value={productData.gstRate || gstRate}
           defaultValue={18}
-          onChange={(e) => handleChange("gstRate", +e.target.value)}
+          onChange={(e) => {
+            setProductData({ ...productData, gstRate: +e.target.value });
+          }}
           className="col-span-3"
           autoComplete="off"
         />
@@ -351,7 +439,9 @@ export default function NewProduct({
         <SheetClose>
           <Button
             type="submit"
-            onClick={() => updateProducts(productData, _id)}
+            onClick={() => {
+               updateProducts(_id)
+            }}
           >
             Update Product
           </Button>

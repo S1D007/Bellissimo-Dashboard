@@ -14,13 +14,35 @@ type AdminState = {
     allLocations: any[],
     test: any[],
     uploadedUrl: string,
-
+    productData: {
+        name: string | undefined,
+        price: number | undefined,
+        category: string | undefined,
+        images: File[] | undefined,
+        description: string | undefined,
+        discount: {
+            percentage: number | undefined,
+            newAmount: number | undefined
+        } | undefined,
+        stock: number | undefined,
+        deliveryLocations: string[] | undefined,
+        eanCode: string | undefined,
+        hsnCode: string | undefined,
+        multiPack: boolean | undefined,
+        howToUse: string | undefined,
+        gstRate: number | undefined,
+        size: {
+            amount: number | undefined,
+            unit: string | undefined
+        } | undefined
+    },
+    setProductData: (data: any) => void,
     AddOffers: (data: any) => void,
     UpdateOffers: (data: any) => void,
     fetchAllUsers: () => void,
     fetchAllProducts: () => void,
     addProducts: (data: any) => void,
-    updateProducts: (data: any, _id: any) => void,
+    updateProducts: (_id: any) => void,
     deleteProducts: (_id: any) => void,
     fetchAllOrders: () => void,
     fetchAllCategory: () => void,
@@ -32,6 +54,7 @@ type AdminState = {
     updateLocation: (data: any, _id: any) => void,
     deleteLocation: (_id: any) => void,
     uploadImage: (image: File) => void
+    removeUpdatdData: () => void
 }
 
 export const useAdmin = create<AdminState>((set: any) => ({
@@ -45,14 +68,53 @@ export const useAdmin = create<AdminState>((set: any) => ({
     allLocations: [],
     test: [1],
     uploadedUrl: "",
-
+    productData: {
+        name: undefined,
+        price: undefined,
+        category: undefined,
+        images: undefined,
+        description: undefined,
+        discount: undefined,
+        stock: undefined,
+        deliveryLocations: undefined,
+        eanCode: undefined,
+        hsnCode: undefined,
+        multiPack: undefined,
+        howToUse: undefined,
+        gstRate: undefined,
+        size: undefined
+    },
+    setProductData: (data: any) => {
+        set({
+            productData: data
+        })
+    },
+    removeUpdatdData: () => {
+        set({
+            productData: {
+                name: undefined,
+                price: undefined,
+                category: undefined,
+                images: undefined,
+                description: undefined,
+                discount: undefined,
+                stock: undefined,
+                deliveryLocations: undefined,
+                eanCode: undefined,
+                hsnCode: undefined,
+                multiPack: undefined,
+                howToUse: undefined,
+                gstRate: undefined,
+                size: undefined
+            }
+        })
+    },
     // offers
     fetchOffers: async () => {
         try {
             set({ isLoading: true })
             let res = await axios.get(`${API_URL}/home/offers`)
             if (res.data.status == "OK") {
-                console.log("fetch offers ", res.data)
                 set({
                     allOffers: res.data.data
                 })
@@ -66,7 +128,6 @@ export const useAdmin = create<AdminState>((set: any) => ({
     },
     DeleteOffers: async (_id: string) => {
         try {
-            console.log("dele ")
             set({ isLoading: true })
             let res = await axios.delete(`${API_URL}/home/offers/${_id}`)
             let prev = useAdmin.getState().allOffers;
@@ -91,7 +152,6 @@ export const useAdmin = create<AdminState>((set: any) => ({
             }
             let res = await axios.post(`${API_URL}/home/offers`, data)
             if (res.data.status == "OK") {
-                console.log("res", res.data)
                 let prev = useAdmin.getState().allOffers;
                 set({
                     allOffers: [...prev, res.data.data]
@@ -99,7 +159,6 @@ export const useAdmin = create<AdminState>((set: any) => ({
                 toast.success("offer added succesfully")
             }
         } catch (error) {
-            console.log("error ", error)
             toast.error("server issue")
         }
         finally {
@@ -119,7 +178,6 @@ export const useAdmin = create<AdminState>((set: any) => ({
             }
             let res = await axios.put(`${API_URL}/home/offers/${data?._id}`, data)
             if (res.data.status == "OK") {
-                console.log("res", res.data)
                 let prev = useAdmin.getState().allOffers;
                 let filterdData = prev.filter((e) => e = e._id != data._id)
                 set({
@@ -128,7 +186,6 @@ export const useAdmin = create<AdminState>((set: any) => ({
                 toast.success("offer added succesfully")
             }
         } catch (error) {
-            console.log("error ", error)
             toast.error("server issue")
         }
         finally {
@@ -216,14 +273,12 @@ export const useAdmin = create<AdminState>((set: any) => ({
         try {
             set({ isLoading: true })
             let res = await axios.get(`${API_URL}/products/all`)
-            console.log("res products ", res)
             if (res.data.status == "OK") {
                 set({
                     allProducts: res.data.data
                 })
             }
         } catch (error) {
-            console.log("error in products : ", error)
             toast.error("server issue")
         }
         finally {
@@ -241,7 +296,6 @@ export const useAdmin = create<AdminState>((set: any) => ({
             //     )
             // }
             const images = await uploadMultipleFiles(data.images)
-            console.log("images ", images)
             const dataToBeSent = { ...data, images }
             let res = await axios.post(`${API_URL}/products/create`, dataToBeSent)
             if (res.data.status == "OK") {
@@ -252,30 +306,28 @@ export const useAdmin = create<AdminState>((set: any) => ({
                 toast.success("added successfully")
             }
         } catch (error) {
-            console.log("error in add products : ", error)
             toast.error("server issue")
         }
         finally {
             set({ isLoading: false })
         }
     },
-    updateProducts: async (data: any, _id: any) => {
+    updateProducts: async (_id: any) => {
         try {
             set({ isLoading: true })
-            let res = await axios.patch(`${API_URL}/products/update/${_id}`, data)
+            let data = useAdmin.getState().productData
+            console.log(data)
+            if (data?.images && data?.images.length > 0) {
+                const images = await uploadMultipleFiles(data.images)
+                data = { ...data, images }
+            }
+            let res = await axios.put(`${API_URL}/products/update/${_id}`, data)
             if (res.data.status == "OK") {
-                let prevarr: any = useAdmin?.getState()?.allProducts;
-                prevarr.forEach((e: any) => {
-                    if (e._id == _id) {
-                        e = { ...e, ...data };
-                    }
-                });
-                set({
-                    allProducts: prevarr
-                })
+                await useAdmin?.getState()?.fetchAllProducts()
                 toast.success("updated successfully")
             }
-        } catch (error) {
+        } catch (error: any) {
+            console.log(error.response)
             toast.error("server issue")
         }
         finally {
@@ -350,7 +402,6 @@ export const useAdmin = create<AdminState>((set: any) => ({
                 })
             }
         } catch (error) {
-            console.log("fetch categories error : ", error)
             toast.error("server issue")
         }
         finally {

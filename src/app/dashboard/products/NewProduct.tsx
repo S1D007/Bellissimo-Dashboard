@@ -51,8 +51,7 @@ export default function NewProduct() {
   });
 
   const handleChange = (property: any, value: any) => {
-    console.log(property, value);
-    setProductData((prevProductData) => ({
+        setProductData((prevProductData) => ({
       ...prevProductData,
       [property]: value,
     }));

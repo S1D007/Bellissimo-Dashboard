@@ -16,8 +16,7 @@ export default function DashboardProvider({ children }: any) {
   const { setTheme } = useTheme();
   useEffect(() => {
     fetchLogin();
-    console.log(isLogged);
-  }, []);
+      }, []);
   if (fetchLoading) {
     return <ModelSpinner/>;
   }
