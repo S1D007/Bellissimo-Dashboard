@@ -39,6 +39,7 @@ type AdminState = {
     setProductData: (data: any) => void,
     AddOffers: (data: any) => void,
     UpdateOffers: (data: any) => void,
+    UpdateOrders: (data: any) => void,
     fetchAllUsers: () => void,
     fetchAllProducts: () => void,
     addProducts: (data: any) => void,
@@ -357,9 +358,9 @@ export const useAdmin = create<AdminState>((set: any) => ({
     },
 
     // manage orders api
-      fetchAllOrders: async () => {
+    fetchAllOrders: async () => {
         try {
-            set({ isLoading: true })
+            set({ isOrderLoading: true })
             let res = await axios.get(`${API_URL}/order/all`)
             if (res.data.status == "OK") {
                 set({
@@ -370,27 +371,25 @@ export const useAdmin = create<AdminState>((set: any) => ({
             toast.error("server issue")
         }
         finally {
-            set({ isLoading: false })
+            set({ isOrderLoading: false })
         }
     },
-    updateOrders: async (data: any, _id: any) => {
+    UpdateOrders: async (data: any) => {
         try {
-            set({ isLoading: true })
-            let res = await axios.patch(`${API_URL}/order/update/${_id}`, data)
+            set({ isOrderLoading: true })
+            let res = await axios.post(`${API_URL}/order/update/${data._id}`, data)
             if (res.data.status == "OK") {
-                set({
-                    // updat the state here
-                })
+                await useAdmin?.getState()?.fetchAllOrders()
                 toast.success("updated successfully")
             }
-        } catch (error) {
+        } catch (error:any) {
+            console.log(error.response)
             toast.error("server issue")
         }
         finally {
-            set({ isLoading: false })
+            set({ isOrderLoading: false })
         }
     },
-
     // categories apis
     fetchAllCategory: async () => {
         try {
